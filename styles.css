@@ -1,0 +1,19 @@
+body	    { background-color:#ffffff; font-family:Verdana,Lucida; }
+h1,h2,h3,h4 { font-family:Verdana,Lucida; }
+th          { font-family:Verdana,Lucida; }
+a,b,dt	    { font-family:Helvetica,Arial; }
+a:link      { color:#000463; }
+a:visited   { color:#000463; }
+a:active    { color:#111473; }
+a.delete    { color:red; font-size: large}
+div.warning { color:red; font-size: large; font-family:Verdana,Lucida;}
+code,i      { color:#000463; }
+.menu	    { font-family:Helvetica,Arial; 
+              font-size:small; 
+              background-color:#e9e9f0;
+              white-space:nowrap; }
+.border     { background-color:#9090b0; }
+.prop       { font-family:Courier; }
+.small      { font-size:small; }
+.warn       { color:red; }
+h3          { font-size: large; margin-bottom : .25em}

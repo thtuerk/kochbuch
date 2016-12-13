@@ -1,0 +1,11 @@
+<style>
+body        { background-color:#ffffff; font-family:Arial, Helvetica, sans-serif; }
+h2,h3,h4    { font-family:Arial, Helvetica, sans-serif; font-size:medium; margin-bottom:0em  }
+h1          { font-family:Arial, Helvetica, sans-serif; font-size:x-large}
+th          { font-family:Arial, Helvetica, sans-serif; }
+a,b,dt      { font-family:Helvetica,Arial; }
+a.delete    { color:red; font-size: medium}
+div.warning { color:red; font-size: medium; font-family:Arial, Helvetica, sans-serif;}
+p           { margin-top:0em }
+ul          { margin-top:0em }
+</style>
