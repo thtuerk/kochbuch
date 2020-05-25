@@ -64,10 +64,15 @@ und andere Dateien, die zu dem Rezept gehören.
 
 ## Installation
 
+Die Kochbuch Applikation benötigt einen Webserver mit PHP, git, pandoc
+und Latex. Um alle Abhängigkeiten mit der richtigen Config und den richtigen 
+Versionen einfach erfüllen zu können, gibt es ein Docker-Image unter
+https://github.com/thtuerk/kochbuch-docker.
+
 Die Kochbuch Applikation benötigt ein GIT repository zum Speichern der
-Rezepte. Erstellen sie bitte ein solches Repository und checken Sie es
-an einer geeigneten Stelle aus, so dass der Webserver volle
-Zugriffsrechte hat. Ebenso wird ein Verzeichnis für temporäre Dateien
+Rezepte. Erstellen Sie bitte ein solches Repository und checken Sie es
+an einer geeigneten Stelle (normalerweise `data`) aus, so dass der Webserver volle
+Zugriffsrechte hat. Ebenso wird ein Verzeichnis (Standard `tmp`) für temporäre Dateien
 benötigt, auf das der Webserver vollen Zugriff hat. Nach dem
 Vorbereiten dieser Verzeichnisse, passen Sie bitte `config.php` an und
 tragen diese Verzeichnisse in den Variablen `TMP_DIR` sowie `DATA_DIR`
@@ -80,10 +85,9 @@ festgelegte eMail-Adresse. Dies wird benutzt um Rezepte auf dem IOTP Drucker
 der Familie auszugeben. Bei Bedarf, kommentieren Sie bitte die Variable
 `IOTP-EMAIL` ein und passen Sie sie auf die gewünschte eMail-Adresse an.
 
-Sollte ein Webseite verfügbar sein, die das Betrachten des
+Sollte eine Webseite verfügbar sein, die das Betrachten des
 GIT-Repositories erlaubt (z.B. eine Git-List Instanz) kann diese
-mittels der Funktion `git_revision_link` sowie der Variablen
-`GIT_NAME` und `GIT_MASTER_LINK` konfiguriert werden.
+mittels verschiedener Variablen ebenfalls in `config.php` konfiguriert werden.
 
 
 ## Kontaktinformationen
