@@ -19,9 +19,9 @@ function print_view($links, $actions, $content_fun, $user) {
 <head>
 <meta http-equiv="content-type" content="text/html; charset=utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
-<script src="http://code.jquery.com/mobile/1.4.2/jquery.mobile-1.4.2.min.js"></script>
-<link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.2/jquery.mobile-1.4.2.min.css">
+<script src="jquery-1.10.2.min.js"></script>
+<script src="jquery.mobile-1.4.2.min.js"></script>
+<link rel="stylesheet" href="jquery.mobile-1.4.2.min.css">
 <style>
 .ui-li-static.ui-collapsible > .ui-collapsible-heading {
     margin: 0;
