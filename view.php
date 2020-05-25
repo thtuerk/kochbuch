@@ -1,3 +1,5 @@
+<?php
+
 /* This file is part of PHP Kochbuch
    Copyright (C) 2013-2016 Thomas Tuerk <thomas@tuerk-brechen.de>
 
@@ -7,12 +9,11 @@
    (at your option) any later version.
 */
 
-<?php 
 
 require_once('functions.php');
 
 function print_view($links, $actions, $content_fun, $user) {
-  global $GIT_NAME, $GIT_MASTER_LINK;
+  global $GIT_NAME, $GIT_MASTER_LINK, $USE_EXTERNAL_GIT_VIEWER;
 ?>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
@@ -42,9 +43,9 @@ function print_view($links, $actions, $content_fun, $user) {
             </div>
             <table class="menu" border="0" cellpadding="0" cellspacing="1">
             <tbody>
-<?php 
+<?php
 foreach ($actions as $i => $value) {
-  ?> 
+  ?>
 <tr>
   <td><img src="dot.png" alt="*" align="bottom" border="0"></td>
   <td><a href="<?php echo $value["l"]?>"><?php echo $value["name"]?></a></td>
@@ -53,9 +54,9 @@ foreach ($actions as $i => $value) {
 }
  if (count($actions) > 0) print "<tr><td colspan=\"2\">&nbsp;</td></tr>\n";
 ?>
-<?php 
+<?php
 foreach ($links as $i => $value) {
-  ?> 
+  ?>
 <tr>
   <td><img src="dot.png" alt="*" align="bottom" border="0"></td>
   <td><a href="<?php echo $value["l"]?>"><?php echo $value["name"]?></a></td>
@@ -69,7 +70,7 @@ foreach ($links as $i => $value) {
 </tr>
 <?php
 
-if (isset ($GIT_NAME)) {?>
+if ($USE_EXTERNAL_GIT_VIEWER) {?>
 <tr>
   <td><img src="dot.png" alt="*" align="bottom" border="0"></td>
   <td><a target="_blank" href="<?php echo $GIT_MASTER_LINK ?>"><?php echo $GIT_NAME; ?></a></td>

@@ -1,3 +1,5 @@
+<?php
+
 /* This file is part of PHP Kochbuch
    Copyright (C) 2013-2016 Thomas Tuerk <thomas@tuerk-brechen.de>
 
@@ -7,9 +9,8 @@
    (at your option) any later version.
 */
 
-<?php
   require_once('config.php');
-  
+
   function utf8_htmlentities($str) {
     return (htmlspecialchars($str, ENT_QUOTES, "UTF-8"));
   }
@@ -41,7 +42,7 @@
      $file_full = add_rezept_dir($file);
      $body = recipe_to_txt($file_full);
 
-     $link = "mailto:" . rawurlencode($address) . 
+     $link = "mailto:" . rawurlencode($address) .
              "?subject=" . rawurlencode($title) .
              "&body=" . rawurlencode($body);
      return $link;
@@ -131,11 +132,8 @@
         case 'swf' :
             return 'application/x-shockwave-flash';
         default :
-            if(function_exists('mime_content_type')) {
-                $fileSuffix = mime_content_type($path);
-            }
             return 'unknown/' . trim($fileSuffix[0], '.');
-      
+
     }
   }
 
@@ -166,7 +164,7 @@
      global $DATA_DIR;
      $rezept_dir = "$DATA_DIR/";
      $len = strlen ($rezept_dir);
-     if (substr ($file, 0, $len) == $rezept_dir) { 
+     if (substr ($file, 0, $len) == $rezept_dir) {
        return (substr ($file, $len));
      } else {return $file; }
   }
@@ -199,7 +197,7 @@
 
      if (empty ($title)) {
        $title = $file;
-     } 
+     }
 
      return $title;
   }
@@ -211,7 +209,7 @@
            str_ireplace($search, $replace, $s1),
            str_ireplace($search, $replace, $s2)
            );
-  } 
+  }
 
   function get_all_recipes($cat, $direct=false) {
     global $DATA_DIR;
@@ -226,8 +224,8 @@
 
       if ($title) {
         if (!(recipe_in_cat ($file2, $cat, $direct))) continue;
-        $results[] = array ('filename' => $file2, 'title' => $title);    
-      } 
+        $results[] = array ('filename' => $file2, 'title' => $title);
+      }
     }
 
     usort($results, function ($a,$b) { return (strcmpUmlauts ($a['title'], $b['title'])) ;} );
@@ -305,8 +303,8 @@
   }
 
   function recipe_cats ($file) {
-    $cat_file = get_kategorien_filename ($file);    
-    $cats_list = file_exists($cat_file) ? file_get_contents($cat_file) : ""; 
+    $cat_file = get_kategorien_filename ($file);
+    $cats_list = file_exists($cat_file) ? file_get_contents($cat_file) : "";
     return (parse_cats_string($cats_list));
   }
 
@@ -328,7 +326,7 @@
     foreach ($all_files as $file) {
       if (!(substr($file, -10) == "kategorien")) continue;
 
-      $cats = parse_cats_string(file_get_contents($file)); 
+      $cats = parse_cats_string(file_get_contents($file));
       foreach ($cats as $cat) {
         $count = isset($results[$cat]) ? $results[$cat] : 0;
         $results[$cat] = $count + 1;
@@ -401,13 +399,13 @@
   function recipe_in_cat ($file, $cat, $direct=false) {
     $cat_file = get_kategorien_filename ($file);
     if (! (file_exists ($cat_file))) return (!(isset($cat)));
-    $lines = file($cat_file); 
+    $lines = file($cat_file);
 
     if (!(isset($cat))) {
       return ((! $direct) || (count($lines) == 0));
     }
 
-    $cat = clean_cat ($cat);    
+    $cat = clean_cat ($cat);
     foreach ($lines as $line) {
       $line2 = clean_cat($line);
       if ($direct) {
@@ -492,16 +490,21 @@
   }
 
   function git_commit($message, &$output = "") {
-     global $wikiUser;
+     global $wikiUser, $USE_EXTERNAL_GIT;
      $author = addslashes(getAuthorFullForUser($wikiUser));
      $command = "commit --message='$message' --author='$author'";
      git($command, $output);
-     git ("push -v");
+     if ($USE_EXTERNAL_GIT) {
+        git ("push -v");
+     }
   }
 
   function git_pull() {
-    git ("pull");
-    git ("clean -f");
+    global $USE_EXTERNAL_GIT;
+    if ($USE_EXTERNAL_GIT) {
+      git ("pull");
+      git ("clean -f");
+    }
   }
 
   function git_stage($file) {
@@ -527,6 +530,7 @@
   }
 
   function git_last_change($file) {
+    global $USE_EXTERNAL_GIT;
     $output = array();
     git ("log --format=\"%H%n%an%n%ae%n%ad\" '$file'", $output);
     $i = 0;
@@ -536,11 +540,11 @@
       $author_email = getAuthorEmail($output[$i + 2]);
       $author = "<a href=\"mailto:$author_email\">" . htmlentities($author_name) . "</a>";
 
-      $date_raw = $output[$i+3];    
+      $date_raw = $output[$i+3];
       $date = strftime("%e. %b %Y   %H:%M", strtotime($date_raw));
 
       $commit_rev = $output[$i];
-      if (function_exists("get_revision_link")) {
+      if ($USE_EXTERNAL_GIT) {
         $lnk = git_revision_link($commit_rev);
       } else {
         $lnk = "";
@@ -560,17 +564,17 @@
 
   function get_new_recipes() {
     $result = array();
-    git ("log --format=\"%H%n%an%n%ae%n%ad\" --name-status --since=\"90 days ago\"", $output);
+    git ("log --format=\"%H%n%an%n%ae%n%ad\" --name-status", $output);
     $i = 0;
     while($i < count($output)) {
       $rev = array();
       $rev["author_name"] = dropAuthorEmail($output[$i + 1]);
       $rev["author_email"] = getAuthorEmail($output[$i + 2]);
-      $date_raw = $output[$i+3];    
+      $date_raw = $output[$i+3];
       $rev["date"] = strtotime($date_raw);
       $rev["no"] = $output[$i];
       $i += 5;
-      
+
       while ($i < count($output) && (str_startsWith ($output[$i], "M") || str_startsWith ($output[$i], "A") || str_startsWith ($output[$i], "D"))) {
         $file_full = $output[$i];
         $i++;
@@ -595,7 +599,7 @@
 
   function format_cat_array_as_tree ($cat, &$all_cats) {
     $content = "";
-    while (true) {      
+    while (true) {
       if (!($current_cat = key($all_cats))) break;
       if (isSubcat($current_cat, $cat)) {
         $content .= "<li>" . mk_cat_link ($current_cat, current($all_cats)) . "</li>\n";
@@ -619,7 +623,7 @@
      if ($ending == "jpeg") return true;
      if ($ending == "JPG") return true;
      if ($ending == "JPEG") return true;
-     return false;    
+     return false;
   }
 
   function create_small_image($file_no_end, $ending) {
@@ -632,26 +636,27 @@
   }
 
   function format_cat($file_full, $tmpfile, $cat_filename, $filetype) {
+    global $TMP_DIR;
     if ($filetype == "pdf4") {
        $out_filename = "$cat_filename.pdf";
        exec ("pandoc --toc --template a4.tmpl -f markdown -o $tmpfile.tex < $file_full");
-       exec("cd tmp; pdflatex $tmpfile.tex > /dev/null 2>&1");       
-       exec("cd tmp; pdflatex $tmpfile.tex > /dev/null 2>&1");       
-       exec("cd tmp; pdflatex $tmpfile.tex > /dev/null 2>&1");       
+       exec("cd $TMP_DIR; pdflatex $tmpfile.tex > /dev/null 2>&1");
+       exec("cd $TMP_DIR; pdflatex $tmpfile.tex > /dev/null 2>&1");
+       exec("cd $TMP_DIR; pdflatex $tmpfile.tex > /dev/null 2>&1");
        output_file ($out_filename, "$tmpfile.pdf");
     } else if ($filetype == "pdf5") {
        $out_filename = "$cat_filename.pdf";
        exec ("pandoc --toc --template a5.tmpl -f markdown -o $tmpfile.tex < $file_full");
-       exec("cd tmp; pdflatex $tmpfile.tex > /dev/null 2>&1");       
-       exec("cd tmp; pdflatex $tmpfile.tex > /dev/null 2>&1");       
-       exec("cd tmp; pdflatex $tmpfile.tex > /dev/null 2>&1");       
+       exec("cd $TMP_DIR; pdflatex $tmpfile.tex > /dev/null 2>&1");
+       exec("cd $TMP_DIR; pdflatex $tmpfile.tex > /dev/null 2>&1");
+       exec("cd $TMP_DIR; pdflatex $tmpfile.tex > /dev/null 2>&1");
        output_file ($out_filename, "$tmpfile.pdf");
     } else if ($filetype == "pdf5x2") {
        $out_filename = "$cat_filename.pdf";
        exec("pandoc --toc --template a5.tmpl -f markdown -o $tmpfile.tex < $file_full");
-       exec("cd tmp; latex $tmpfile.tex > /dev/null 2>&1");       
-       exec("cd tmp; latex $tmpfile.tex > /dev/null 2>&1");       
-       exec("cd tmp; latex $tmpfile.tex > /dev/null 2>&1");       
+       exec("cd $TMP_DIR; latex $tmpfile.tex > /dev/null 2>&1");
+       exec("cd $TMP_DIR; latex $tmpfile.tex > /dev/null 2>&1");
+       exec("cd $TMP_DIR; latex $tmpfile.tex > /dev/null 2>&1");
        exec("dvips -t a5 -o $tmpfile-1.ps $tmpfile.dvi > /dev/null 2>&1");
        exec("psnup -Pa5 -pa4 -n 2 $tmpfile-1.ps $tmpfile.ps > /dev/null 2>&1");
        exec("gs -q -dBATCH -dNOPAUSE -sDEVICE=pdfwrite -sOutputFile=$tmpfile.pdf $tmpfile.ps > /dev/null 2>&1");
@@ -689,5 +694,5 @@
       git_stage("$file.dir");
       git_commit($_POST['commit']);
   }
-  
+
 ?>

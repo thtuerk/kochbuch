@@ -1,3 +1,5 @@
+<?php
+
 /* This file is part of PHP Kochbuch
    Copyright (C) 2013-2016 Thomas Tuerk <thomas@tuerk-brechen.de>
 
@@ -6,8 +8,6 @@
    the Free Software Foundation; either version 3 of the License, or
    (at your option) any later version.
 */
-
-<?php
 
 function new_markdown_file($warning) {
   $newcats = isset($_GET['cat']) ? $_GET['cat'] : "";
@@ -27,7 +27,7 @@ function new_markdown_file($warning) {
   <td valign=top>Kategorien:</td><td><textarea name="newcats" cols="100" row="3"><?php echo $newcats; ?></textarea></td></tr>
   <td>Dateiname:</td><td><input name="newfile" type="text" size="80" value="<?php echo $newfile; ?>"></td></tr>
   </table>
-  
+
   <p>
      <input type="hidden" name="mode" value="new">
      <input type="submit" value="Speichern" name="action" />
@@ -36,7 +36,7 @@ function new_markdown_file($warning) {
 </form>
 
 <?php
-  $tmpfname = tempnam("/tmp", "dummy_recipe.md");
+  $tmpfname = tempnam($TMP_DIR, "dummy_recipe.md");
   $handle = fopen($tmpfname, "w");
   fwrite($handle, $content);
   fclose($handle);

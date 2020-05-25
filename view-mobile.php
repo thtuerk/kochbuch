@@ -1,3 +1,5 @@
+<?php 
+
 /* This file is part of PHP Kochbuch
    Copyright (C) 2013-2016 Thomas Tuerk <thomas@tuerk-brechen.de>
 
@@ -6,8 +8,6 @@
    the Free Software Foundation; either version 3 of the License, or
    (at your option) any later version.
 */
-
-<?php 
 
 require_once('functions.php');
 

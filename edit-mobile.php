@@ -1,3 +1,5 @@
+<?php
+
 /* This file is part of PHP Kochbuch
    Copyright (C) 2013-2016 Thomas Tuerk <thomas@tuerk-brechen.de>
 
@@ -6,8 +8,6 @@
    the Free Software Foundation; either version 3 of the License, or
    (at your option) any later version.
 */
-
-<?php
 
 function edit_markdown_file($warning, $file, $newfile, $preview) {
   $title = get_recipe_title($file);
@@ -42,7 +42,7 @@ function edit_markdown_file($warning, $file, $newfile, $preview) {
   <div class="ui-field-contain">
      <label for="newfile">Kommentar</label>
      <input name="commit" type="text" size="50" value="<?php echo (htmlentities($commit_message)); ?>">
-  </div> 
+  </div>
   <div data-role="controlgroup" data-type="vertical">
      <input type="hidden" name="mode" value="save">
      <input type="hidden" name="file" value="<?php echo $file; ?>">
@@ -54,7 +54,7 @@ function edit_markdown_file($warning, $file, $newfile, $preview) {
 
 <?php
 if ($show_preview) {
-  $tmpfname = tempnam("/tmp", "dummy_recipe.md");
+  $tmpfname = tempnam($TMP_DIR, "dummy_recipe.md");
   $handle = file_put_contents($tmpfname, $content);
   $content = recipe_to_html($tmpfname);
   unlink($tmpfname);

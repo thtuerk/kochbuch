@@ -1,3 +1,5 @@
+<?php
+
 /* This file is part of PHP Kochbuch
    Copyright (C) 2013-2016 Thomas Tuerk <thomas@tuerk-brechen.de>
 
@@ -6,8 +8,6 @@
    the Free Software Foundation; either version 3 of the License, or
    (at your option) any later version.
 */
-
-<?php 
 
   require_once('config.php');
   require_once('functions.php');
@@ -30,7 +30,7 @@
   $links = array (
     array ("l" => "index.php", "name" => "Alle Rezepte")
   );
-  $links[] = array ("l" => "index.php?mode=latest_additions", "name" => "Neue Rezepte");
+  $links[] = array ("l" => "index.php?mode=latest_additions", "name" => "Zuletzt geänderte Rezepte");
   $links[] = array ("l" => "index.php?mode=view_cats", "name" => "Kategorien");
   $links[] = array ("l" => "index.php?mode=nocat", "name" => "Rezepte ohne Kategorie");
 
@@ -104,7 +104,7 @@
             utf8_htmlentities($sub_cat_0) . "</a> ($count)";
        $subcats_html .= "<li>$html</li>";
     }
- 
+
     $content .= "<table>\n";
     $content .= "<tr><th align=left valign=top>Oberkategorie: </th><td>$super_cat</td></tr>\n";
     $content .= "<tr><th align=left valign=top>Unterkategorien: </th><td><ul>$subcats_html</ul></td></tr>\n";
@@ -119,8 +119,7 @@
     print_view ($links, $actions, function () {global $content; echo $content;}, $wikiUser);
   } else if ($mode == "latest_additions") {
     $neue_rezepte = get_new_recipes();
-    $rezepte_anzahl = count ($neue_rezepte);
-    $content = "<h2>Neue Rezepte ($rezepte_anzahl)</h2>\n\n";
+    $content = "<h2>Zuletzt geänderte Rezepte</h2>\n\n";
     $content .= "<table>\n";
 
     foreach ($neue_rezepte as $file => $rev) {
@@ -128,7 +127,7 @@
       $date = strftime("%e. %b %Y", $rev["date"]);
       $content .= "<td align=right>$date</td><td>&nbsp;</td>";
 
-      $title = get_recipe_title($file);      
+      $title = get_recipe_title($file);
       $link = "<a href = \"index.php?mode=view&file=". urlencode($file) . "\">". $title . "</a>";
       $content .= "<td>$link</td><td>&nbsp;</td>";
 
@@ -140,7 +139,7 @@
     }
     $content .= "</table>";
 
-    print_view ($links, $actions, function () {global $content; echo $content;}, $wikiUser);    
+    print_view ($links, $actions, function () {global $content; echo $content;}, $wikiUser);
   } else if ($mode == "view_cats") {
     $content = "<h2>Kategorien</h2>\n\n";
 
@@ -154,7 +153,7 @@
     $content .= format_cat_array_as_tree("", $cats);
     $content .= "</ul>";
 
-    print_view ($links, $actions, function () {global $content; echo $content;}, $wikiUser);    
+    print_view ($links, $actions, function () {global $content; echo $content;}, $wikiUser);
   } else if ($mode == "nocat") {
     $all_recipes = get_recipes_no_cat();
 
@@ -185,7 +184,7 @@
     } else if ($filetype == "pdf5x2") {
        $out_filename = substr($file, 0, -2) . "pdf";
        exec("pandoc --template a5.tmpl -f markdown -o $tmpfile.tex < $file_full");
-       exec("cd tmp; latex $tmpfile.tex > /dev/null 2>&1");       
+       exec("cd $TMP_DIR; latex $tmpfile.tex > /dev/null 2>&1");
        exec("dvips -t a5 -o $tmpfile-1.ps $tmpfile.dvi > /dev/null 2>&1");
        exec("psnup -Pa5 -pa4 -n 2 $tmpfile-1.ps $tmpfile.ps > /dev/null 2>&1");
        exec("gs -q -dBATCH -dNOPAUSE -sDEVICE=pdfwrite -sOutputFile=$tmpfile.pdf $tmpfile.ps > /dev/null 2>&1");
@@ -208,8 +207,8 @@
     `pandoc -s -f markdown -o $tmpfile.html --to html -H iotp.css < $file_full`;
     $title = get_recipe_title($file);
     $body = recipe_to_txt($file_full);
-    $mail = new PHPMailer(true);  
-    try {  
+    $mail = new PHPMailer(true);
+    try {
       $mail->AddAddress($IOTP_EMAIL, 'IOTP');
       $mail->SetFrom($IOTP_EMAIL, 'Kochbuch');
       $mail->Subject = $title;
@@ -247,8 +246,8 @@
     fwrite($handle, get_kategory_md($cat, $all_recipes_direct));
     foreach ($subcats as $subcat => $count) {
       $recipes = get_all_recipes($subcat, true);
-      fwrite($handle, get_kategory_md($subcat, $recipes));      
-    }    
+      fwrite($handle, get_kategory_md($subcat, $recipes));
+    }
     fwrite($handle, "\n\n\n");
 
     foreach ($all_recipes as $i => $value) {
@@ -259,7 +258,7 @@
     $cat_filename = "kochbuch";
 
     format_cat($file_full, $tmpfile, $cat_filename, $filetype);
-    `rm $file_full`; 
+    `rm $file_full`;
   } else if ($mode == "delete") {
     $file = $_GET['file'];
     if (!isset ($_GET['confirm'])) {
@@ -301,12 +300,12 @@
       $upload_result="Datei <i>" . $_GET['extra_file'] ."</i> erfolgreich gelöscht";
       $content .= "<h2 style=\"color:red\">$upload_result</h2><hr/>\n\n";
     }
-    
+
     $content .= "<h2>Dateien \n";
     $content .= "<a target=\"_blank\" href=\"index.php?mode=view&file=". urlencode ($file) . "\">".
            utf8_htmlentities(get_recipe_title($file)) . "</a> ";
     $content .= "</h2>\n\n";
-  
+
     $content .= "<table width=\"100%\"><tr><th align=left>Dateiname</th><th align=right>Größe</th><th>&nbsp;</th></tr>\n";
 
     $extra_files = get_recipe_extra_files($file);
@@ -329,11 +328,16 @@
     $file_full = add_rezept_dir($file);
 
     $table = "<table><tr><th align=left>Kategorien:</th><td>";
-    $table .= implode (", ", array_map (function ($cat) {return 
-        "<a href=\"index.php?mode=cathegory&cat=". urlencode($cat) . "\">$cat</a>";}, 
+    $table .= implode (", ", array_map (function ($cat) {return
+        "<a href=\"index.php?mode=cathegory&cat=". urlencode($cat) . "\">$cat</a>";},
         clean_cats_list(recipe_cats($file))));
     $table .= "</td></tr>\n";
-    $table .= "<tr><th align=left valign=top>Geschichte:</th><td>";
+    $geschichte_lnk = "Geschichte";
+    if ($USE_EXTERNAL_GIT) {
+      $geschichte_lnk = "<a href=\"" . git_history_link($file) . "\">" . $geschichte_lnk . "</a>";
+    }
+    $table .= "<tr><th align=left valign=top>";
+    $table .= $geschichte_lnk . ":</th><td>";
     $table .= git_last_change($file);
     $table .= "</td></tr>\n";
     $table .= "<tr><th align=left valign=top>Dateiname:</th><td>$file</td></tr>\n";
@@ -371,7 +375,7 @@
            $extra_file_full_no_end = implode(".", $file_array);
            if (str_endsWith($extra_file_full_no_end, "-klein")) continue;
            create_small_image($extra_file_full_no_end, $ending);
-           $image_table .= "<table><tr><td align=center><a href=\"$extra_file_full\"><image src=\"". $extra_file_full_no_end . 
+           $image_table .= "<table><tr><td align=center><a href=\"$extra_file_full\"><image src=\"". $extra_file_full_no_end .
               "-klein." . $ending . "\"></a><br/>";
            $image_table .= utf8_htmlentities($extra_file);
            $image_table .= "</td></tr></table>\n";
@@ -395,7 +399,7 @@
   } else if ($mode == "new") {
     if (isset ($_POST['action'])) {
       $file = $_POST['newfile'];
-      $warning = check_filename($file);
+      $warning = check_filename($file, "");
       if ($_POST['action'] == "Speichern" && empty ($warning)) {
         file_put_contents(add_rezept_dir($file), str_replace("\r", "", $_POST['data']));
         recipe_set_cats($file, parse_cats_string($_POST['newcats']));
@@ -409,7 +413,7 @@
         $save_message .= "<a href=\"index.php?mode=edit&file=". urlencode ($file) . "\">".
            utf8_htmlentities(get_recipe_title($file)) . "</a> bearbeiten";
         print_view ($links, $actions, function () {global $save_message; echo $save_message;}, $wikiUser);
-      } else {      
+      } else {
         $content_fun = function() { global $warning; new_markdown_file ($warning); };
         print_view ($links, $actions, $content_fun, $wikiUser);
       }
@@ -422,10 +426,10 @@
     $data = $_POST['data'];
     $action = $_POST['action'];
     $newcats = $_POST['newcats'];
- 
+
     $file_new = $_POST['newfile'];
     $warning = check_filename($file_new, $file);
-    
+
     $save_message = "";
     if (($action == "Speichern") && ($warning == "")) {
       save_file ($file, $file_new, $data, $newcats);
@@ -483,10 +487,10 @@
       git_commit("Kategorie $cat bearbeitet");
 
       print_view ($links, $actions, function () {global $save_message; echo $save_message;}, $wikiUser);
-    } 
+    }
     if ($action == "Abbrechen") {
       header("Location: index.php?mode=cathegory&cat=". urlencode ($cat));
-    } 
+    }
   } else {
     print "Error: Unknown Mode: $mode";
   }
