@@ -4,6 +4,9 @@ Dieses Projekt implementiert ein sehr einfaches Content Management
 System, das für Kochbücher gedacht ist. Es benutzt PHP, Git und Pandoc
 sowie durch Pandoc Latex.
 
+Meine Familie setzt dieses und sehr ähnliche Systeme seit mehr als 20 Jahren ein. Es wurden nur relativ wenige Dinge.  Die Kochbuch-Applikation sollte noch funktionieren, entspricht aber bei weitem nicht mehr modernen Standards.
+
+
 ## Motivation
 
 Es gibt tolle Open Source Rezeptverwaltungen. Diese haben jedoch viele
